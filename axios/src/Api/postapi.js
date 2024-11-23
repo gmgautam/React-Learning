@@ -26,6 +26,5 @@ return api.post("/posts",post)
 // update the post 
 
 export const upDatePost=(id,post)=>{
-    console.log(id,post,"<------------POST INSTANCE")
     return api.put(`/posts/${id}`,post)
 }
