@@ -74,7 +74,7 @@ const handleUpdatePost=(el)=>setIsUpDated(el)
               </div>
               Title:=={el.title}
               <br />
-             body--- {el.body.slice(0,10)}
+             {/* body--- {el.body.slice(0,10)} */}
               <div className="flex justify-between items-end ">
                 <button
                   onClick={() => handleDelete(el.id)}

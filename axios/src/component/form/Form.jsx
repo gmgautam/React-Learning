@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 import { useForm } from "react-hook-form";
-import { postData,upDatePost } from "../../Api/postapi";
+import { postData, upDatePost } from "../../Api/postapi";
 import { useEffect } from "react";
 const FormForPost = ({ data, setData, isUpdated, setIsUpDated }) => {
   //  intial value for th form
@@ -10,7 +10,7 @@ const FormForPost = ({ data, setData, isUpdated, setIsUpDated }) => {
   };
 
   // useForm hook------->
-  const { handleSubmit, reset, register, setValue } = useForm({
+  const { handleSubmit, reset, register, setValue, getValues } = useForm({
     defaultValues: initialValue,
   });
 
@@ -19,17 +19,28 @@ const FormForPost = ({ data, setData, isUpdated, setIsUpDated }) => {
 
   // --------------
 
-  const updateData=async()=>{
-    try{
-      const res=upDatePost(isUpdated.id,isUpdated)
-      console.log(res,"upadte value")
-      setTimeout(() => {
-        setIsUpDated({})
-      }, 2000);
-    }catch(err){
-      console.log(err)
+  const updateData = async () => {
+    const data = getValues();
+    let newUpdatedDta = { ...data, id: isUpdated.id, userId: 1 };
+    console.log(newUpdatedDta);
+    try {
+      const res = await upDatePost(isUpdated.id, getValues());
+      if (res.status === 200) {
+        setData((prev) => {
+          return prev.map((currel) =>
+            currel.id === res.data.id ? res.data : currel
+          );
+        });
+        setIsUpDated({});
+      } else {
+        console.log("nalo");
+      }
+    } catch (err) {
+      console.log(err);
     }
-  }
+  };
+
+  // subnmit form function 
   const submitData = async (data2, event) => {
     const action = event.nativeEvent.submitter.value;
     if (action === "Add") {
@@ -47,25 +58,18 @@ const FormForPost = ({ data, setData, isUpdated, setIsUpDated }) => {
       } catch (err) {
         console.log(err);
       }
-
-    }else if(action==="Edit"){
-      updateData()
-      console.log("else is runn")
+    } else if (action === "Edit") {
+      updateData();
     }
-    
   };
 
   // updated the post
   useEffect(() => {
     if (isUpdated) {
-      // reset({
-      //   title:isUpdated.title ||"",
-      //   body:isUpdated.body||"",
-      // })
       setValue("title", isUpdated?.title ?? "");
       setValue("body", isUpdated?.body ?? "");
     }
-  }, [isUpdated]);
+  }, [isUpdated, setValue]);
   return (
     <div>
       <div className="flex justify-center border p-5">
